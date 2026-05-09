@@ -1,3 +1,5 @@
+package Networking;
+
 import java.io.IOError;
 import java.io.IOException;
 import java.net.Socket;
@@ -11,5 +13,9 @@ public class picoConnection {
         } catch (IOException e) {
             System.out.println("Pico connection failed");
         }
+    }
+
+    private void openSocketReader() {
+        Thread RXThread = new Thread();
     }
 }
