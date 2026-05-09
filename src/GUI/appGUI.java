@@ -1,7 +1,5 @@
 package GUI;
 
-import java.util.concurrent.TimeoutException;
-
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -11,7 +9,6 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -21,8 +18,11 @@ import javafx.util.Duration;
 public class appGUI extends Application {
     private final double SP = 0;
     private double pv = 0;
-    private double err = 100;
+    private double err = 10;
+    private double corr = 10;
     private XYChart.Series<Number, Number> errTimSeries;
+    private XYChart.Series<Number, Number> pvTimSeries;
+    private XYChart.Series<Number, Number> corrTimSeries;
 
     private double currTime = 0;
 
@@ -45,7 +45,9 @@ public class appGUI extends Application {
         Timeline tm = new Timeline(new KeyFrame(Duration.millis(20), e -> {
             currTime += 20.0 / 1000.0;
             timeLabel.setText("Elapsed time: " + (int) currTime + "s");
-            this.errTimSeries.getData().add(new XYChart.Data<>(currTime, err));
+            this.errTimSeries.getData().add(new XYChart.Data<>(currTime, this.err));
+            this.pvTimSeries.getData().add(new XYChart.Data<>(currTime, this.pv));
+            this.corrTimSeries.getData().add(new XYChart.Data<>(currTime, this.corr));
 
         }));
         tm.setCycleCount(Timeline.INDEFINITE);
@@ -63,15 +65,63 @@ public class appGUI extends Application {
         // Middle part of the GUI
         VBox graphBox = new VBox();
 
-        NumberAxis xAxis = new NumberAxis();
-        NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Time [s]");
-        yAxis.setLabel("Error");
+        NumberAxis xAxiserr = new NumberAxis();
+        NumberAxis yAxiserr = new NumberAxis();
+        xAxiserr.setLabel("Time [s]");
+        yAxiserr.setLabel("Error");
 
-        LineChart<Number, Number> errChart = new LineChart<>(xAxis, yAxis);
+        NumberAxis xAxispv = new NumberAxis();
+        NumberAxis yAxispv = new NumberAxis();
+        xAxispv.setLabel("Time [s]");
+        yAxispv.setLabel("Process Variable");
+
+        NumberAxis xAxisCorr = new NumberAxis();
+        NumberAxis yAxisCorr = new NumberAxis();
+        xAxisCorr.setLabel("Time [s]");
+        yAxisCorr.setLabel("Correction");
+
+        // For the axis numbers and tick count
+        xAxiserr.setAutoRanging(false);
+        xAxiserr.setUpperBound(60);
+        xAxiserr.setTickUnit(10);
+        yAxiserr.setAutoRanging(false);
+        yAxiserr.setUpperBound(30);
+        yAxiserr.setTickUnit(10);
+
+        xAxispv.setAutoRanging(false);
+        xAxispv.setUpperBound(60);
+        xAxispv.setTickUnit(10);
+        yAxispv.setAutoRanging(false);
+        yAxispv.setUpperBound(600);
+        yAxispv.setTickUnit(30);
+
+        xAxisCorr.setAutoRanging(false);
+        xAxisCorr.setUpperBound(60);
+        xAxisCorr.setTickUnit(10);
+        yAxisCorr.setAutoRanging(false);
+        yAxisCorr.setUpperBound(50);
+        yAxisCorr.setTickUnit(30);
+
+
+
+
+
+        LineChart<Number, Number> errChart = new LineChart<>(xAxiserr, yAxiserr);
         this.errTimSeries = new XYChart.Series<>();
-        errChart.getData().add(errTimSeries);
+        errChart.getData().add(this.errTimSeries);
         graphBox.getChildren().add(errChart);
+
+
+        LineChart<Number, Number>  pvChart = new LineChart<>(xAxispv, yAxispv);
+        this.pvTimSeries = new XYChart.Series<>();
+        pvChart.getData().add(this.pvTimSeries);
+        graphBox.getChildren().add(pvChart);
+
+        LineChart<Number, Number>  corrChart = new LineChart<>(xAxisCorr, yAxisCorr);
+        this.corrTimSeries = new XYChart.Series<>();
+        corrChart.getData().add(this.corrTimSeries);
+        graphBox.getChildren().add(corrChart);
+
 
         maiBorderPane.setCenter(graphBox);
 
