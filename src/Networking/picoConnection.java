@@ -2,23 +2,19 @@ package Networking;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Queue;
 
 public class picoConnection {
     private Socket picoSocket;
-    private int port;
-    private String picoIP;
     private Queue<picoPacket> picoPackets;
+    private PrintStream ps;
 
     public picoConnection(int port, String IP, Queue<picoPacket> picoPackets) {
-        this.port = port;
-        this.picoIP = IP;
         this.picoPackets = picoPackets;
-
         try {
             this.picoSocket = new Socket(IP, port);
+            this.ps = new PrintStream(this.picoSocket.getOutputStream());
         }
 
         catch (IOException e) {
@@ -34,11 +30,13 @@ public class picoConnection {
 
     }
 
-    public void send(String type, int Kp, int ki, int kd) {
-        try (PrintStream pw = new PrintStream(this.picoSocket.getOutputStream())) {
-            pw.println(type + ", " + Kp + ", " + ki + ", " + kd);
-        } catch (IOException e) {
-            System.out.println("Could not send data to pico");
-        }
+    // Added this for simplicity as well but kept the other just incase
+    public void send(String mssg) {
+        this.ps.println(mssg);
     }
+
+    public void send(String type, int Kp, int ki, int kd) {
+        this.ps.println(type + "," + Kp + "," + ki + "," + kd);
+    }
+
 }
