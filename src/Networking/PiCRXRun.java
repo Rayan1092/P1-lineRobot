@@ -31,7 +31,7 @@ public class PiCRXRun implements Runnable {
                 int pv = Integer.parseInt(parts[2]);
                 int cor = Integer.parseInt(parts[3]);
 
-                picoPacket packet = new picoPacket(err, pv, cor);
+                picoPacket packet = new picoPacket("D", err, pv, cor);
 
                 synchronized (packetQueue) {
                     packetQueue.add(packet);
