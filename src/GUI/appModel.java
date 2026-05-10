@@ -9,9 +9,9 @@ import Networking.picoPacket;
 
 public class appModel {
     // The gains
-    private int Kp = 0;
-    private int Ki = 0;
-    private int Kd = 0;
+    private double Kp = 0;
+    private double Ki = 0;
+    private double Kd = 0;
     // The connection to the pico
     private picoConnection piC;
     private Queue<picoPacket> picoPackets = new LinkedList<>();
@@ -27,26 +27,32 @@ public class appModel {
 
     }
 
-    public void send(String type, int data) {
+    public void send(String type, double data) {
         String dataMsg;
 
         switch (type) {
             case "Kp" -> {
-                dataMsg = "G" + "," + data + "," + this.Ki + "," + this.Kd;
+                this.Kp = data;
+                dataMsg = "G" + "," + this.Kp + "," + this.Ki + "," + this.Kd;
             }
 
             case "Ki" -> {
-                dataMsg = "G" + "," + this.Kp + "," + data + "," + this.Kd;
+                this.Ki = data;
+                dataMsg = "G" + "," + this.Kp + "," + this.Ki + "," + this.Kd;
             }
 
             default -> {
-                dataMsg = "G" + "," + this.Kp + "," + this.Ki + "," + data;
+                this.Kd = data;
+                dataMsg = "G" + "," + this.Kp + "," + this.Ki + "," + this.Kd;
             }
         }
 
+        // ROunds to 3 sig figs as 1000 moves 3 places right then rounds to an intger
+        // then back 3 sig figs + doing double division
+        alertObservers("Changed " + type + "'s value to " + Math.round(data * 1000) / 1000.0);
+
         this.piC.send(dataMsg);
 
-        alertObservers("Changed " + type + "'s value to" + data);
     }
 
     public void reset() {
@@ -63,14 +69,25 @@ public class appModel {
 
     public void alertObservers(String data) {
         for (Observer<appModel, String> o : this.observerlist)
-            // TODO implement
-            o.update(data);
+            o.update(this, data);
     }
 
     public picoPacket getLatestPacket() {
         synchronized (this.picoPackets) {
             return this.picoPackets.poll();
         }
+    }
+
+    public double getKpVal() {
+        return this.Kp;
+    }
+
+    public double getKiVal() {
+        return this.Ki;
+    }
+
+    public double getKdVal() {
+        return this.Kd;
     }
 
 }

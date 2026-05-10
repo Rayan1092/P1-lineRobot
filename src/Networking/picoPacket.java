@@ -1,4 +1,4 @@
 package Networking;
 
-public record picoPacket(String type, int err, int pv, int cor) {
+public record picoPacket(String type, int err, int pv, int corr) {
 }
