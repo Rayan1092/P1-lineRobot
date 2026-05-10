@@ -22,7 +22,7 @@ public class appModel {
 
     public appModel() {
 
-        this.piC = new picoConnection(8080, "192.168.4.1", picoPackets);
+        this.piC = new picoConnection(5000, "192.168.4.1", picoPackets);
         this.piC.recieve();
 
     }
