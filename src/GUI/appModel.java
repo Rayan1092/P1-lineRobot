@@ -61,6 +61,11 @@ public class appModel {
         this.Kp = RESETVAL;
 
         alertObservers("Reset all values to " + RESETVAL);
+
+        String mssg;
+
+        mssg = "G" + "," + this.Kp + "," + this.Ki + "," + this.Kd;
+        this.piC.send(mssg);
     }
 
     public void addObserver(Observer<appModel, String> observer) {
