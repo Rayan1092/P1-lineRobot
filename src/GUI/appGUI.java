@@ -38,8 +38,11 @@ public class appGUI extends Application implements Observer<appModel, String> {
     private Slider KpSlider;
     private Slider KiSlider;
     private Slider KdSlider;
-
+    private NumberAxis xAxiserr = new NumberAxis();
+    private NumberAxis xAxispv = new NumberAxis();
+    private NumberAxis xAxisCorr = new NumberAxis();
     private double currTime = 0;
+    private int upperBound = 60;
 
     public void init() {
         this.model = new appModel();
@@ -61,21 +64,43 @@ public class appGUI extends Application implements Observer<appModel, String> {
         Label errLabel = new Label("Error: " + this.err);
         Label timeLabel = new Label("Elapsed time: " + currTime + "s");
 
+
         Timeline tm = new Timeline(new KeyFrame(Duration.millis(20), e -> {
             currTime += 20.0 / 1000.0;
+            if ((int) currTime >= this.upperBound)  {
+                this.upperBound += 60;
+                
+                this.xAxiserr.setUpperBound(this.upperBound);
+                this.xAxiserr.setLowerBound(this.upperBound - 60);
+
+                this.xAxispv.setUpperBound(this.upperBound);
+                this.xAxispv.setLowerBound(this.upperBound - 60);
+
+                this.xAxisCorr.setUpperBound(this.upperBound);
+                this.xAxisCorr.setLowerBound(this.upperBound - 60);
+
+            }
             picoPacket packet = this.model.getLatestPacket();
 
-            this.pv = packet.pv();
-            this.err = packet.err();
-            this.corr = packet.corr();
+            if (packet != null) {
+                this.pv = packet.pv();
+                this.err = packet.err();
+                this.corr = packet.corr();
 
-            pvLabel.setText("Process Value : " + this.pv);
-            errLabel.setText("Error: " + this.err);
-            timeLabel.setText("Elapsed time: " + (int) currTime + "s");
 
-            this.errTimSeries.getData().add(new XYChart.Data<>(currTime, this.err));
-            this.pvTimSeries.getData().add(new XYChart.Data<>(currTime, this.pv));
-            this.corrTimSeries.getData().add(new XYChart.Data<>(currTime, this.corr));
+                pvLabel.setText("Process Value : " + this.pv);
+                errLabel.setText("Error: " + this.err);
+                timeLabel.setText("Elapsed time: " + (int) currTime + "s");
+
+                this.errTimSeries.getData().add(new XYChart.Data<>(currTime, this.err));
+                if (this.errTimSeries.getData().size() > 200) this.errTimSeries.getData().remove(0);
+
+                this.pvTimSeries.getData().add(new XYChart.Data<>(currTime, this.pv));
+                if (this.pvTimSeries.getData().size() > 200) this.pvTimSeries.getData().remove(0);
+
+                this.corrTimSeries.getData().add(new XYChart.Data<>(currTime, this.corr));
+                if (this.corrTimSeries.getData().size() > 200) this.corrTimSeries.getData().remove(0);
+            }
 
         }));
         tm.setCycleCount(Timeline.INDEFINITE);
@@ -93,39 +118,36 @@ public class appGUI extends Application implements Observer<appModel, String> {
         // Middle part of the GUI
         VBox graphBox = new VBox();
 
-        NumberAxis xAxiserr = new NumberAxis();
         NumberAxis yAxiserr = new NumberAxis();
-        xAxiserr.setLabel("Time [s]");
+        this.xAxiserr.setLabel("Time [s]");
         yAxiserr.setLabel("Error");
 
-        NumberAxis xAxispv = new NumberAxis();
         NumberAxis yAxispv = new NumberAxis();
-        xAxispv.setLabel("Time [s]");
+        this.xAxispv.setLabel("Time [s]");
         yAxispv.setLabel("Process Var");
 
-        NumberAxis xAxisCorr = new NumberAxis();
         NumberAxis yAxisCorr = new NumberAxis();
-        xAxisCorr.setLabel("Time [s]");
+        this.xAxisCorr.setLabel("Time [s]");
         yAxisCorr.setLabel("Correction");
 
         // For the axis numbers and tick count
-        xAxiserr.setAutoRanging(false);
-        xAxiserr.setUpperBound(60);
-        xAxiserr.setTickUnit(10);
+        this.xAxiserr.setAutoRanging(false);
+        this.xAxiserr.setUpperBound(60);
+        this.xAxiserr.setTickUnit(10);
         yAxiserr.setAutoRanging(false);
         yAxiserr.setUpperBound(30);
         yAxiserr.setTickUnit(10);
 
-        xAxispv.setAutoRanging(false);
-        xAxispv.setUpperBound(60);
-        xAxispv.setTickUnit(10);
+        this.xAxispv.setAutoRanging(false);
+        this.xAxispv.setUpperBound(60);
+        this.xAxispv.setTickUnit(10);
         yAxispv.setAutoRanging(false);
         yAxispv.setUpperBound(50);
         yAxispv.setTickUnit(30);
 
-        xAxisCorr.setAutoRanging(false);
-        xAxisCorr.setUpperBound(60);
-        xAxisCorr.setTickUnit(10);
+        this.xAxisCorr.setAutoRanging(false);
+        this.xAxisCorr.setUpperBound(60);
+        this.xAxisCorr.setTickUnit(10);
         yAxisCorr.setAutoRanging(false);
         yAxisCorr.setUpperBound(50);
         yAxisCorr.setTickUnit(30);
@@ -201,16 +223,16 @@ public class appGUI extends Application implements Observer<appModel, String> {
             this.model.reset();
         });
 
-        this.KpSlider.valueProperty().addListener((obs, oldval, newval) -> {
-            this.model.send("Kp", newval.doubleValue());
+        this.KpSlider.setOnMouseReleased(e -> {
+            this.model.send("Kp", this.KpSlider.getValue());
         });
 
-        this.KiSlider.valueProperty().addListener((obs, oldval, newval) -> {
-            this.model.send("Ki", newval.doubleValue());
+        this.KiSlider.setOnMouseReleased(e -> {
+            this.model.send("Ki",this.KiSlider.getValue());
         });
 
-        this.KdSlider.valueProperty().addListener((obs, oldval, newval) -> {
-            this.model.send("Kd", newval.doubleValue());
+        this.KdSlider.setOnMouseReleased(e -> {
+            this.model.send("Kd", this.KdSlider.getValue());
         });
 
         tm.play();

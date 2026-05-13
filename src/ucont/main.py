@@ -17,7 +17,7 @@ soc, ip = server.accept()
 
 sensarr = []
 
-sp = 0;
+sp = 0
 Sens1 = Pin(21, Pin.IN)
 Sens2 = Pin(10, Pin.IN)
 Sens3 = Pin(20, Pin.IN)
@@ -33,7 +33,7 @@ Inte = 0
 dt = 20 / 1000
 prevErr = 0
 
-Kp = 0
+Kp = 1
 Ki = 0
 Kd = 0
 
