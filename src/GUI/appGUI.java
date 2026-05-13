@@ -136,6 +136,7 @@ public class appGUI extends Application implements Observer<appModel, String> {
         this.xAxiserr.setTickUnit(10);
         yAxiserr.setAutoRanging(false);
         yAxiserr.setUpperBound(30);
+        yAxiserr.setLowerBound(-30);
         yAxiserr.setTickUnit(10);
 
         this.xAxispv.setAutoRanging(false);
@@ -143,6 +144,7 @@ public class appGUI extends Application implements Observer<appModel, String> {
         this.xAxispv.setTickUnit(10);
         yAxispv.setAutoRanging(false);
         yAxispv.setUpperBound(50);
+        yAxispv.setLowerBound(-30);
         yAxispv.setTickUnit(30);
 
         this.xAxisCorr.setAutoRanging(false);
@@ -150,6 +152,7 @@ public class appGUI extends Application implements Observer<appModel, String> {
         this.xAxisCorr.setTickUnit(10);
         yAxisCorr.setAutoRanging(false);
         yAxisCorr.setUpperBound(50);
+        yAxisCorr.setLowerBound(-30);
         yAxisCorr.setTickUnit(30);
 
         LineChart<Number, Number> errChart = new LineChart<>(xAxiserr, yAxiserr);

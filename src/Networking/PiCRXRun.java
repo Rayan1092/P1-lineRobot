@@ -27,9 +27,9 @@ public class PiCRXRun implements Runnable {
                     System.out.println("Non data packet was sent!");
                     continue;
                 }
-                int err = Integer.parseInt(parts[1]);
-                int pv = Integer.parseInt(parts[2]);
-                int cor = Integer.parseInt(parts[3]);
+                double err = Double.parseDouble(parts[1]);
+                double pv = Double.parseDouble(parts[2]);
+                double cor = Double.parseDouble(parts[3]);
 
                 picoPacket packet = new picoPacket("D", err, pv, cor);
 
