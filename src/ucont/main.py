@@ -18,11 +18,11 @@ soc, ip = server.accept()
 sensarr = []
 
 sp = 0
-Sens1 = Pin(21, Pin.IN)
-Sens2 = Pin(10, Pin.IN)
-Sens3 = Pin(20, Pin.IN)
-Sens4 = Pin(11, Pin.IN)
-Sens5 = Pin(19, Pin.IN)
+Sens1 = Pin(17, Pin.IN)
+Sens2 = Pin(18, Pin.IN)
+Sens3 = Pin(19, Pin.IN)
+Sens4 = Pin(20, Pin.IN)
+Sens5 = Pin(21, Pin.IN)
 
 Sensarr = [Sens1, Sens2, Sens3, Sens4, Sens5]
 
